@@ -9,9 +9,11 @@ the savings add up live.
 ![deploy](https://img.shields.io/badge/deploy-single%20binary-success)
 ![cache](https://img.shields.io/badge/cache-100%25%20local-34e0a1)
 
-<!-- DEMO GIF HERE -->
-> _Demo: the dashboard at `/__cachet/` — the **$ saved** counter ticking up and green
-> "hit" rows streaming in as repeated/rephrased calls are served from cache._
+<p align="center">
+  <img src="assets/demo.gif" alt="Cachet live dashboard — the $ saved counter ticking up and green hit rows streaming in" width="820">
+</p>
+
+<p align="center"><sub><i>The <code>/__cachet/</code> dashboard: estimated <b>$ saved</b> ticking up and green “hit” rows streaming in as repeated/rephrased calls are served from cache.</i></sub></p>
 
 ---
 
