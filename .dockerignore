@@ -1,0 +1,10 @@
+# Keep the build context tiny — only Cargo manifests + src/ are needed.
+/target
+/.git
+/.gitignore
+/.claude
+*.md
+LICENSE-MIT
+LICENSE-APACHE
+Dockerfile
+.dockerignore

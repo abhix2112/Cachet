@@ -1,0 +1,44 @@
+[package]
+name = "cachet"
+version = "0.3.0"
+edition = "2021"
+rust-version = "1.80"
+description = "A transparent, 100%-local semantic cache for LLM APIs — a single-binary drop-in proxy that caches responses semantically and entirely locally."
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/abhix2112/cachet"
+readme = "README.md"
+keywords = ["llm", "cache", "proxy", "openai", "semantic-cache"]
+categories = ["caching", "web-programming::http-server", "command-line-utilities"]
+
+[dependencies]
+# Async runtime
+tokio = { version = "1.43", features = ["full"] }
+
+# HTTP server framework
+axum = "0.8"
+
+# Upstream HTTP client. default-features = false keeps the build pure-Rust (rustls,
+# no system OpenSSL). We deliberately do NOT enable gzip/brotli/deflate so the proxy
+# forwards response bytes (and Content-Encoding) untouched — true transparency.
+reqwest = { version = "0.12", default-features = false, features = [
+    "rustls-tls",
+    "stream",
+    "http2",
+] }
+
+# Stream trait for the latency-instrumented response body
+futures-util = "0.3"
+bytes = "1"
+
+# Structured logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Error handling / JSON error bodies
+thiserror = "2"
+serde_json = "1"
+anyhow = "1"
+
+[profile.release]
+lto = "thin"
+strip = true

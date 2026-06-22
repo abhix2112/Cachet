@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Cachet · live</title>
+<style>
+  :root {
+    --bg: #07090d;
+    --bg-soft: #0d1118;
+    --surface: #11161f;
+    --surface-2: #151b26;
+    --line: #1f2734;
+    --text: #e7edf5;
+    --muted: #6b7888;
+    --faint: #44505f;
+    --green: #34e0a1;
+    --green-dim: #1c8f68;
+    --red: #ff6b73;
+    --grey: #5a6675;
+    --accent: #6ea8ff;
+    --mono: ui-monospace, "SF Mono", "JetBrains Mono", "Menlo", "Cascadia Code", monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background:
+      radial-gradient(1200px 600px at 80% -10%, rgba(52,224,161,0.06), transparent 60%),
+      radial-gradient(900px 500px at 0% 0%, rgba(110,168,255,0.05), transparent 55%),
+      var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+    letter-spacing: 0.1px;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 28px 24px 60px; }
+
+  header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .logo {
+    width: 30px; height: 30px; border-radius: 8px;
+    background: linear-gradient(135deg, var(--green), var(--green-dim));
+    box-shadow: 0 0 24px rgba(52,224,161,0.35);
+    display: grid; place-items: center; color: #04130d; font-weight: 800; font-family: var(--mono);
+  }
+  .brand h1 { font-size: 17px; margin: 0; font-weight: 650; letter-spacing: 0.2px; }
+  .brand .sub { color: var(--faint); font-size: 12px; margin-top: 1px; }
+  .conn { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); font-family: var(--mono); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--grey); }
+  .dot.live { background: var(--green); box-shadow: 0 0 0 0 rgba(52,224,161,0.6); animation: pulse 2s infinite; }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(52,224,161,0.5); }
+    70% { box-shadow: 0 0 0 7px rgba(52,224,161,0); }
+    100% { box-shadow: 0 0 0 0 rgba(52,224,161,0); }
+  }
+
+  /* Hero */
+  .hero {
+    position: relative; overflow: hidden;
+    background: linear-gradient(180deg, var(--surface), var(--bg-soft));
+    border: 1px solid var(--line); border-radius: 18px;
+    padding: 38px 34px 30px; margin-bottom: 22px;
+  }
+  .hero .label { font-size: 12.5px; letter-spacing: 2.4px; text-transform: uppercase; color: var(--green); font-weight: 600; }
+  .hero .amount {
+    font-family: var(--mono); font-weight: 700; line-height: 1;
+    font-size: clamp(56px, 11vw, 104px);
+    margin: 14px 0 8px; letter-spacing: -1.5px;
+    background: linear-gradient(180deg, #ffffff, #b9f6dd);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    transition: transform 0.18s cubic-bezier(.2,.9,.3,1.4), filter 0.4s ease;
+  }
+  .hero .amount.bump { transform: scale(1.035); filter: drop-shadow(0 0 22px rgba(52,224,161,0.45)); }
+  .hero .disclaimer { color: var(--faint); font-size: 12px; max-width: 520px; }
+  .hero .spark { position: absolute; right: 22px; bottom: 18px; width: 320px; height: 70px; opacity: 0.9; }
+
+  /* Stat cards */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; }
+  .card .k { color: var(--muted); font-size: 11.5px; letter-spacing: 1px; text-transform: uppercase; }
+  .card .v { font-family: var(--mono); font-size: 27px; font-weight: 650; margin-top: 8px; letter-spacing: -0.5px; }
+  .card .v small { font-size: 14px; color: var(--faint); font-weight: 500; }
+
+  /* Feed */
+  .feed-head { display: flex; align-items: baseline; justify-content: space-between; margin: 6px 2px 12px; }
+  .feed-head h2 { font-size: 13px; font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase; color: var(--muted); margin: 0; }
+  .feed-head .hint { color: var(--faint); font-size: 12px; font-family: var(--mono); }
+  .feed { display: flex; flex-direction: column; gap: 7px; }
+  .row {
+    display: grid; grid-template-columns: 92px 1fr 96px 132px 96px; align-items: center; gap: 12px;
+    background: var(--surface); border: 1px solid var(--line); border-left: 3px solid var(--grey);
+    border-radius: 10px; padding: 11px 14px; font-size: 13.5px;
+    animation: slidein 0.32s cubic-bezier(.2,.8,.2,1);
+  }
+  @keyframes slidein { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+  .row.hit { border-left-color: var(--green); background: linear-gradient(90deg, rgba(52,224,161,0.07), var(--surface) 38%); }
+  .row.miss { border-left-color: var(--red); }
+  .row.bypass { border-left-color: var(--grey); opacity: 0.72; }
+  .row .time { font-family: var(--mono); color: var(--muted); font-size: 12.5px; }
+  .row .model { font-family: var(--mono); color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .badge { justify-self: start; font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: 0.8px;
+           padding: 3px 9px; border-radius: 999px; text-transform: uppercase; }
+  .badge.hit { color: #052e20; background: var(--green); }
+  .badge.miss { color: #2a0e10; background: var(--red); }
+  .badge.bypass { color: #cdd6e2; background: #2a3340; }
+  .row .layer { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .row .layer .score { color: var(--green); }
+  .row .saved { font-family: var(--mono); text-align: right; color: var(--faint); }
+  .row.hit .saved { color: var(--green); }
+
+  .empty { color: var(--faint); text-align: center; padding: 30px; font-family: var(--mono); font-size: 13px; }
+  footer { margin-top: 28px; color: var(--faint); font-size: 11.5px; text-align: center; font-family: var(--mono); }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">$</div>
+        <div>
+          <h1>Cachet</h1>
+          <div class="sub">100% local semantic cache · live</div>
+        </div>
+      </div>
+      <div class="conn"><span class="dot" id="dot"></span><span id="connText">connecting…</span></div>
+    </header>
+
+    <section class="hero">
+      <div class="label">Estimated saved</div>
+      <div class="amount" id="amount">$0.0000</div>
+      <div class="disclaimer">
+        Estimated from the served answer's token counts (≈ chars ÷ 4) priced at approximate model
+        list prices. An estimate, not a bill — edit the pricing table to match your plan.
+      </div>
+      <canvas class="spark" id="spark" width="640" height="140"></canvas>
+    </section>
+
+    <section class="stats">
+      <div class="card"><div class="k">Requests</div><div class="v" id="requests">0</div></div>
+      <div class="card"><div class="k">Cache hits</div><div class="v" id="hits">0</div></div>
+      <div class="card"><div class="k">Hit rate</div><div class="v" id="hitRate">0<small>%</small></div></div>
+      <div class="card"><div class="k">Tokens saved</div><div class="v" id="tokens">0</div></div>
+    </section>
+
+    <div class="feed-head">
+      <h2>Live request feed</h2>
+      <div class="hint">newest first · green = served from cache</div>
+    </div>
+    <div class="feed" id="feed"><div class="empty" id="empty">waiting for traffic…</div></div>
+
+    <footer>cachet · GET /__cachet/ · served locally, no external requests</footer>
+  </div>
+
+<script>
+(function () {
+  "use strict";
+  const $ = (id) => document.getElementById(id);
+  const fmtInt = (n) => n.toLocaleString("en-US");
+  // Hero total: read like real dollars once it's meaningful (2 dp ≥ $0.01),
+  // but keep up to 4 dp below that so small demos still show movement.
+  const fmtHero = (d) => d >= 0.01
+    ? "$" + d.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    : "$" + d.toFixed(4);
+  // Per-row saved is per-hit and tiny — show enough precision to be non-zero.
+  const fmtRow = (d) => d >= 0.01
+    ? "$" + d.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 4 })
+    : "$" + d.toFixed(6);
+
+  // --- Animated hero number (count-up tween) ---
+  let shownSaved = 0, targetSaved = 0, raf = null;
+  function tweenSaved(to) {
+    targetSaved = to;
+    if (raf) return;
+    const amount = $("amount");
+    const start = shownSaved, t0 = performance.now(), dur = 520;
+    function step(now) {
+      const p = Math.min(1, (now - t0) / dur);
+      const e = 1 - Math.pow(1 - p, 3); // easeOutCubic
+      shownSaved = start + (targetSaved - start) * e;
+      amount.textContent = fmtHero(shownSaved);
+      if (p < 1) { raf = requestAnimationFrame(step); }
+      else { shownSaved = targetSaved; amount.textContent = fmtHero(shownSaved); raf = null; }
+    }
+    amount.classList.add("bump");
+    setTimeout(() => amount.classList.remove("bump"), 200);
+    raf = requestAnimationFrame(step);
+  }
+
+  // --- Sparkline of cumulative savings ---
+  const sparkData = [];
+  function pushSpark(v) {
+    sparkData.push(v);
+    if (sparkData.length > 80) sparkData.shift();
+    const c = $("spark"), ctx = c.getContext("2d");
+    const W = c.width, H = c.height, pad = 6;
+    ctx.clearRect(0, 0, W, H);
+    if (sparkData.length < 2) return;
+    const max = Math.max(...sparkData), min = Math.min(...sparkData);
+    const span = (max - min) || 1;
+    const x = (i) => pad + (i / (sparkData.length - 1)) * (W - pad * 2);
+    const y = (v) => H - pad - ((v - min) / span) * (H - pad * 2);
+    const grad = ctx.createLinearGradient(0, 0, 0, H);
+    grad.addColorStop(0, "rgba(52,224,161,0.35)");
+    grad.addColorStop(1, "rgba(52,224,161,0)");
+    ctx.beginPath(); ctx.moveTo(x(0), H - pad);
+    sparkData.forEach((v, i) => ctx.lineTo(x(i), y(v)));
+    ctx.lineTo(x(sparkData.length - 1), H - pad); ctx.closePath();
+    ctx.fillStyle = grad; ctx.fill();
+    ctx.beginPath();
+    sparkData.forEach((v, i) => i ? ctx.lineTo(x(i), y(v)) : ctx.moveTo(x(i), y(v)));
+    ctx.strokeStyle = "#34e0a1"; ctx.lineWidth = 2; ctx.lineJoin = "round"; ctx.stroke();
+  }
+
+  // --- Stat cards ---
+  function renderStats(s) {
+    $("requests").textContent = fmtInt(s.requests);
+    $("hits").textContent = fmtInt(s.hits);
+    const hr = $("hitRate");
+    hr.textContent = (s.hitRate * 100).toFixed(1);
+    const pct = document.createElement("small");
+    pct.textContent = "%";
+    hr.appendChild(pct);
+    $("tokens").textContent = fmtInt(s.tokensSaved);
+    tweenSaved(s.savedMicros / 1e6);
+  }
+
+  // --- Feed rows ---
+  // SECURITY: the `model` field is attacker-controlled (it comes straight from the
+  // request JSON). We build every cell with textContent / DOM nodes and never use
+  // innerHTML for request-derived data, so a malicious model string cannot inject
+  // markup or script into the dashboard (stored-XSS prevention).
+  function cell(cls, text) {
+    const d = document.createElement("div");
+    d.className = cls;
+    d.textContent = text;
+    return d;
+  }
+  function rowEl(ev) {
+    const div = document.createElement("div");
+    // status is server-controlled ("hit"/"miss"/"bypass"); guard anyway.
+    const status = ev.status === "hit" || ev.status === "miss" ? ev.status : "bypass";
+    div.className = "row " + status;
+    const time = new Date(ev.ts).toLocaleTimeString("en-US", { hour12: false });
+    const model = ev.model && ev.model.length ? ev.model : "—";
+
+    div.appendChild(cell("time", time));
+    const m = cell("model", model);
+    m.title = model; // set via property, not parsed as HTML
+    div.appendChild(m);
+    div.appendChild(cell("badge " + status, status));
+
+    const layerCell = document.createElement("div");
+    layerCell.className = "layer";
+    if (status === "hit" && ev.layer === "semantic" && ev.sim != null) {
+      layerCell.appendChild(document.createTextNode("semantic "));
+      const score = document.createElement("span");
+      score.className = "score";
+      score.textContent = Number(ev.sim).toFixed(3);
+      layerCell.appendChild(score);
+    } else if (status === "hit") {
+      layerCell.textContent = ev.layer === "semantic" ? "semantic" : "exact";
+    } else {
+      layerCell.textContent = "—";
+    }
+    div.appendChild(layerCell);
+
+    div.appendChild(cell("saved", ev.savedMicros > 0 ? "+" + fmtRow(ev.savedMicros / 1e6) : "—"));
+    return div;
+  }
+  function prepend(ev) {
+    const empty = $("empty"); if (empty) empty.remove();
+    const feed = $("feed");
+    feed.insertBefore(rowEl(ev), feed.firstChild);
+    while (feed.children.length > 60) feed.removeChild(feed.lastChild);
+  }
+
+  // --- SSE wiring ---
+  function setConn(live) {
+    $("dot").className = "dot" + (live ? " live" : "");
+    $("connText").textContent = live ? "live" : "reconnecting…";
+  }
+  function connect() {
+    const es = new EventSource("/__cachet/events");
+    es.onopen = () => setConn(true);
+    es.onerror = () => setConn(false); // EventSource auto-reconnects
+    es.onmessage = (e) => {
+      const msg = JSON.parse(e.data);
+      if (msg.type === "snapshot") {
+        shownSaved = msg.stats.savedMicros / 1e6;
+        $("amount").textContent = fmtHero(shownSaved);
+        renderStats(msg.stats);
+        msg.events.slice().reverse().forEach(prepend); // oldest first so newest ends on top
+        pushSpark(shownSaved);
+      } else if (msg.type === "event") {
+        renderStats(msg.stats);
+        prepend(msg.event);
+        pushSpark(msg.stats.savedMicros / 1e6);
+      }
+    };
+  }
+  connect();
+})();
+</script>
+</body>
+</html>

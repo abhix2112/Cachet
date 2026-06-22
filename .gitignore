@@ -1,0 +1,17 @@
+# Rust build output
+/target
+**/*.rs.bk
+
+# Secrets / local env
+.env
+.env.*
+
+# Claude Code local settings (not for the public repo)
+/.claude
+
+# Editor / OS cruft
+.DS_Store
+*.swp
+*~
+.idea/
+.vscode/
